@@ -76,7 +76,7 @@ namespace EatPdb {
                         pos2 = (uint) File.Position;
                         if (thunk.IsEmpty())
                             break;
-                        if (thunk.TryGetOrdinal(out var ord)) {
+                        if (thunk.TryGetOrdinal(out var _)) {
                         } else {
                             File.SeekRVA(Resolver, (uint) thunk.Value);
                             Reader.ReadStruct<ImportDirThunkHint>();

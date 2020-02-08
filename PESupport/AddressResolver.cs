@@ -12,6 +12,14 @@ namespace PESupport {
 
         public AddressResolver(uint number) => Sections = new List<SectionHeader>();
         public void Put(SectionHeader header) => Sections.Add(header);
+        public SectionHeader GetSection(uint RVA) {
+            foreach (var secheader in Sections) {
+                if (secheader.VirtualAddress <= RVA && secheader.VirtualAddress + secheader.Misc.VirtualSize > RVA) {
+                    return secheader;
+                }
+            }
+            throw new AddressNotFoundException(RVA);
+        }
         public uint Resolve(uint RVA) {
             foreach (var secheader in Sections) {
                 if (secheader.VirtualAddress <= RVA && secheader.VirtualAddress + secheader.Misc.VirtualSize > RVA) {
@@ -19,6 +27,14 @@ namespace PESupport {
                 }
             }
             throw new AddressNotFoundException(RVA);
+        }
+        public uint RevResolve(uint FOA) {
+            foreach (var secheader in Sections) {
+                if (secheader.PointerToRawData <= FOA && secheader.Misc.VirtualSize > FOA) {
+                    return FOA - secheader.PointerToRawData + secheader.VirtualAddress;
+                }
+            }
+            throw new AddressNotFoundException(FOA);
         }
     }
 }
