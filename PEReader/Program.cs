@@ -1,16 +1,21 @@
 ﻿using CommandLine;
+using PESupport;
 using System;
 using System.IO;
-using PESupport;
 
 namespace PEReader {
-    class Program {
+
+    internal class Program {
+
         public class Options {
+
             [Option('i', "Input", Required = true, HelpText = "Input File")]
             public string InputFile { get; set; }
         }
-        static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
+
+        private static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RealMain);
+
         private static readonly string[] DataDirName = new string[]{
             "Export",
             "Import",
@@ -29,6 +34,7 @@ namespace PEReader {
             "COMRuntimedescriptor",
             "Reserved",
         };
+
         private static void RealMain(Options options) {
             try {
                 using var file = File.OpenRead(options.InputFile);
@@ -113,7 +119,7 @@ namespace PEReader {
                             if (thunk.TryGetOrdinal(out var ord)) {
                                 Console.WriteLine("#{0}", ord);
                             } else {
-                                file.SeekRVA(resolver, (uint)thunk.Value);
+                                file.SeekRVA(resolver, (uint) thunk.Value);
                                 var hint = reader.ReadStruct<ImportDirThunkHint>().Hint;
                                 Console.WriteLine("\t{0:X4}:{1}", hint, reader.ReadByteString());
                             }

@@ -34,6 +34,7 @@ namespace PESupport {
         public OptionalHeader OptionalHeader;
 
         public bool CheckHealth() => Signature == 0x4550 && FileHeader.Machine == 0x8664 && OptionalHeader.Magic == 0x20B;
+
         public void AssertHealth() {
             if (!CheckHealth())
                 throw new NotSupportedException("x86_64 PE file expected");
@@ -126,8 +127,10 @@ namespace PESupport {
 
     [StructLayout(LayoutKind.Explicit)]
     public unsafe struct SectionHeaderMisc {
+
         [FieldOffset(0)]
         public uint PhysicalAddress;
+
         [FieldOffset(0)]
         public uint VirtualSize;
     }
@@ -171,6 +174,7 @@ namespace PESupport {
         public ulong Value;
 
         public bool IsEmpty() => Value == 0;
+
         public bool TryGetOrdinal(out uint ordinal) {
             if ((Value & 0x8000000000000000) != 0) {
                 ordinal = (uint) Value;

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace EatPdb {
+
     internal class SymbolDatabase : IEnumerable<KeyValuePair<uint, SortedSet<string>>> {
         private readonly SortedDictionary<uint, SortedSet<string>> fullmap = new SortedDictionary<uint, SortedSet<string>>();
         private readonly SortedDictionary<string, uint> revmap = new SortedDictionary<string, uint>();
+
         public void Add(uint RVA, string name) {
             if (fullmap.TryGetValue(RVA, out var set))
                 set.Add(name);

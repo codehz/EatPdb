@@ -8,25 +8,35 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace EatPdb {
-    class Program {
+
+    internal class Program {
+
         public class Options {
+
             [Option('i', "Input", Required = true, HelpText = "Input File")]
             public string InputFile { get; set; }
+
             [Option('p', "Pdb", HelpText = "Pdb File")]
             public string PdbFile { get; set; }
+
             [Option('o', "Ouput", Required = true, HelpText = "Output File")]
             public string OuputFile { get; set; }
+
             [Option("DllName", HelpText = "DllName")]
             public string DllName { get; set; }
+
             [Option('d', "Definition", HelpText = "Module-Definition file")]
             public string Definition { get; set; }
+
             [Option('v', "Verbose", Default = false, HelpText = "Verbose Output")]
             public bool Verbose { get; set; }
         }
-        static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
+
+        private static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RealMain);
 
         private static uint GetAlign(uint length, uint align = 512) => length % align == 0 ? length : (length / align + 1) * align;
+
         private static void RealMain(Options options) {
             try {
                 if (options.PdbFile == null)

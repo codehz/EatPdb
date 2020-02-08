@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 
 namespace PESupport {
+
     public class AddressResolver {
         private readonly List<SectionHeader> Sections;
 
         [Serializable]
         private class AddressNotFoundException : Exception {
-            public AddressNotFoundException(uint RVA) : base(string.Format("RVA {0} not mapped in this PE file", RVA)) { }
+
+            public AddressNotFoundException(uint RVA) : base(string.Format("RVA {0} not mapped in this PE file", RVA)) {
+            }
         }
 
         public AddressResolver(uint number) => Sections = new List<SectionHeader>();
+
         public void Put(SectionHeader header) => Sections.Add(header);
+
         public SectionHeader GetSection(uint RVA) {
             foreach (var secheader in Sections) {
                 if (secheader.VirtualAddress <= RVA && secheader.VirtualAddress + secheader.Misc.VirtualSize > RVA) {
@@ -20,6 +25,7 @@ namespace PESupport {
             }
             throw new AddressNotFoundException(RVA);
         }
+
         public uint Resolve(uint RVA) {
             foreach (var secheader in Sections) {
                 if (secheader.VirtualAddress <= RVA && secheader.VirtualAddress + secheader.Misc.VirtualSize > RVA) {
@@ -28,6 +34,7 @@ namespace PESupport {
             }
             throw new AddressNotFoundException(RVA);
         }
+
         public uint RevResolve(uint FOA) {
             foreach (var secheader in Sections) {
                 if (secheader.PointerToRawData <= FOA && secheader.Misc.VirtualSize > FOA) {

@@ -2,8 +2,10 @@
 using System.Runtime.InteropServices;
 
 namespace PESupport {
+
     internal static class StructOP<T> where T : unmanaged {
         private static readonly int Size = Marshal.SizeOf<T>();
+
         public static unsafe T Read(BinaryReader reader) {
             T val;
             var ptr = (byte*) &val;
@@ -11,6 +13,7 @@ namespace PESupport {
                 *ptr++ = reader.ReadByte();
             return val;
         }
+
         public static unsafe void Write(T input, BinaryWriter writer) {
             var ptr = (byte*) &input;
             for (uint i = 0; i < Size; i++)

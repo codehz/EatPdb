@@ -1,27 +1,36 @@
-﻿using System;
-using System.Linq;
+﻿using CommandLine;
 using SharpPdb.Native;
-using CommandLine;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace PdbReader {
-    class Program {
+
+    internal class Program {
+
         public class Options {
+
             [Option('v', "Verbose", Default = false, HelpText = "Verbose output")]
             public bool Verbose { get; set; }
+
             [Option('d', "Demangle", Default = false, HelpText = "Demangle function name")]
             public bool Demangle { get; set; }
+
             [Option('i', "Input", Required = true, HelpText = "Input File")]
             public string InputFile { get; set; }
         }
-        static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
+
+        private static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RealMain);
 
         private class SymbolEqualityComparer : IEqualityComparer<PdbPublicSymbol> {
+
             public bool Equals([AllowNull] PdbPublicSymbol x, [AllowNull] PdbPublicSymbol y) => x.RelativeVirtualAddress == y.RelativeVirtualAddress;
+
             public int GetHashCode([DisallowNull] PdbPublicSymbol obj) => obj.RelativeVirtualAddress.GetHashCode();
         }
+
         private static void RealMain(Options options) {
             try {
                 using var reader = new PdbFileReader(options.InputFile);
