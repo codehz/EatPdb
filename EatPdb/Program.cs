@@ -37,6 +37,20 @@ namespace EatPdb {
 
         private static uint GetAlign(uint length, uint align = 512) => length % align == 0 ? length : (length / align + 1) * align;
 
+        private static bool FilterName(string name) {
+            if (name.StartsWith("_"))
+                return false;
+            if (name.StartsWith("??_"))
+                return false;
+            if (name.StartsWith("??@"))
+                return false;
+            if (name.Contains("std@@Q"))
+                return false;
+            if (name.Contains("std@@U"))
+                return false;
+            return true;
+        }
+
         private static void RealMain(Options options) {
             try {
                 if (options.PdbFile == null)
@@ -55,7 +69,7 @@ namespace EatPdb {
                 var symdb = new SymbolDatabase();
 
                 // Collect all symbols
-                foreach (var item in pdb.PublicSymbols.Where(item => item.IsCode))
+                foreach (var item in pdb.PublicSymbols.Where(item => item.IsCode && FilterName(item.Name)))
                     symdb.Add((uint) item.RelativeVirtualAddress, item.Name);
 
                 // Exclude imported symbols
