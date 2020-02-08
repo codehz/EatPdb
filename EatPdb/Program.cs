@@ -18,9 +18,9 @@ namespace EatPdb {
             public string OuputFile { get; set; }
             [Option("DllName", HelpText = "DllName")]
             public string DllName { get; set; }
-            [Option('e', "Export", HelpText = "Export file")]
-            public string Export { get; set; }
-            [Option('v', "Verbose", Default = false, HelpText = "Export file")]
+            [Option('d', "Definition", HelpText = "Module-Definition file")]
+            public string Definition { get; set; }
+            [Option('v', "Verbose", Default = false, HelpText = "Verbose Output")]
             public bool Verbose { get; set; }
         }
         static void Main(string[] args) => Parser.Default.ParseArguments<Options>(args)
@@ -33,13 +33,13 @@ namespace EatPdb {
                     options.PdbFile = Path.GetFileNameWithoutExtension(options.InputFile) + ".pdb";
                 if (options.DllName == null)
                     options.DllName = Path.GetFileName(options.OuputFile);
-                if (options.Export == null)
-                    options.Export = Path.GetFileNameWithoutExtension(options.OuputFile) + ".exp";
+                if (options.Definition == null)
+                    options.Definition = Path.GetFileNameWithoutExtension(options.OuputFile) + ".def";
 
                 // Copy input file to output file, so we do not need to touch input file again
                 File.Copy(options.InputFile, options.OuputFile, true);
                 using var file = File.Open(options.OuputFile, FileMode.Open, FileAccess.ReadWrite);
-                using var exp = File.OpenWrite(options.Export);
+                using var exp = File.OpenWrite(options.Definition);
                 using var expwriter = new BinaryWriter(exp);
                 using var action = new PEAction(file);
                 using var pdb = new PdbFileReader(options.PdbFile);
