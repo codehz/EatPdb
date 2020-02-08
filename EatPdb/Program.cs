@@ -12,7 +12,7 @@ namespace EatPdb {
         public class Options {
             [Option('i', "Input", Required = true, HelpText = "Input File")]
             public string InputFile { get; set; }
-            [Option('p', "Pdb", Required = true, HelpText = "Pdb File")]
+            [Option('p', "Pdb", HelpText = "Pdb File")]
             public string PdbFile { get; set; }
             [Option('o', "Ouput", Required = true, HelpText = "Output File")]
             public string OuputFile { get; set; }
@@ -29,6 +29,8 @@ namespace EatPdb {
         private static uint GetAlign(uint length, uint align = 512) => length % align == 0 ? length : (length / align + 1) * align;
         private static void RealMain(Options options) {
             try {
+                if (options.PdbFile == null)
+                    options.PdbFile = Path.GetFileNameWithoutExtension(options.InputFile) + ".pdb";
                 if (options.DllName == null)
                     options.DllName = Path.GetFileName(options.OuputFile);
                 if (options.Export == null)
