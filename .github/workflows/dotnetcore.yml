@@ -18,4 +18,9 @@ jobs:
     - name: Build with dotnet
       run: dotnet build -c Release
     - name: Publish
-      run: dotnet publish -c Release -r ${{ matrix.os }} --self-contained
+      run: dotnet publish -c Release -r ${{ matrix.os }} -o dist --self-contained
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ matrix.os }}
+        path: dist
