@@ -3,19 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdbReader", "PdbReader\PdbReader.csproj", "{B9770D48-849A-4A4C-A061-B31DF6FF4288}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdbReader", "PdbReader\PdbReader.csproj", "{B9770D48-849A-4A4C-A061-B31DF6FF4288}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CEBC03DA-6D63-4A0E-A039-C1B7CE53A9BF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PEReader", "PEReader\PEReader.csproj", "{DC713E81-ADF4-4422-ADCE-B98E2CEC998F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PEReader", "PEReader\PEReader.csproj", "{DC713E81-ADF4-4422-ADCE-B98E2CEC998F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PESupport", "PESupport\PESupport.csproj", "{FC808605-A648-4034-BB43-F6E652D82C89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PESupport", "PESupport\PESupport.csproj", "{FC808605-A648-4034-BB43-F6E652D82C89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EatPdb", "EatPdb\EatPdb.csproj", "{5719CBF6-D08C-4F9E-BC97-8FC5BB9A6228}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EatPdb", "EatPdb\EatPdb.csproj", "{5719CBF6-D08C-4F9E-BC97-8FC5BB9A6228}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
