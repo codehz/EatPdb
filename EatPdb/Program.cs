@@ -39,8 +39,7 @@ namespace EatPdb {
                 // Copy input file to output file, so we do not need to touch input file again
                 File.Copy(options.InputFile, options.OuputFile, true);
                 using var file = File.Open(options.OuputFile, FileMode.Open, FileAccess.ReadWrite);
-                using var exp = File.OpenWrite(options.Definition);
-                using var expwriter = new BinaryWriter(exp);
+                using var exp = File.CreateText(options.Definition);
                 using var action = new PEAction(file);
                 using var pdb = new PdbFileReader(options.PdbFile);
                 var symdb = new SymbolDatabase();
@@ -54,17 +53,18 @@ namespace EatPdb {
                     if (symdb.RemoveName(sym) && options.Verbose)
                         Console.WriteLine("Removed {0}", sym);
 
+                // Build cache
+                var cache = symdb.ToArray();
+                var sorted = symdb.Build();
+
                 // Print exported symbols
-                expwriter.Write("LIBRARY " + options.DllName + "\n");
-                expwriter.Write("EXPORTS\n");
-                foreach (var (key, value) in symdb)
-                    foreach (var name in value)
-                        expwriter.Write(name + "\n");
+                exp.Write("LIBRARY " + options.DllName + "\n");
+                exp.Write("EXPORTS\n");
+                foreach (var (name, idx) in sorted)
+                    exp.Write(string.Format("\t{0}\n", name));
 
                 // Calculate append length
                 uint length = 0;
-                var cache = symdb.ToArray();
-                var sorted = symdb.Build();
                 var expdirlength = (uint)Marshal.SizeOf<ExportDir>();
                 var dllnamelength = (uint)(options.DllName.Length + 1);
                 var NumberOfFunctions = (uint) cache.Count();
