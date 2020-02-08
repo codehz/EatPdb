@@ -3,6 +3,17 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.0.1</Version>
+    <Authors>CodeHz</Authors>
+    <Company>CodeHz</Company>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>CodeHz</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/codehz/EatPdb/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/codehz/EatPdb/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags />
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
