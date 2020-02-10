@@ -40,6 +40,8 @@ namespace EatPdb {
         private static bool FilterName(string name) {
             if (name.StartsWith("_"))
                 return false;
+            if (name.StartsWith("?__"))
+                return false;
             if (name.StartsWith("??_"))
                 return false;
             if (name.StartsWith("??@"))
