@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace EatPdb {
 
     internal class SymbolDatabase : IEnumerable<KeyValuePair<uint, SortedSet<string>>> {
         private readonly SortedDictionary<uint, SortedSet<string>> fullmap = new SortedDictionary<uint, SortedSet<string>>();
-        private readonly SortedDictionary<string, uint> revmap = new SortedDictionary<string, uint>();
+        private readonly SortedDictionary<string, uint> revmap = new SortedDictionary<string, uint>(StringComparer.Ordinal);
 
         public void Add(uint RVA, string name) {
             if (fullmap.TryGetValue(RVA, out var set))
@@ -35,7 +36,7 @@ namespace EatPdb {
             ushort idx = 0;
             foreach (var (key, _) in fullmap)
                 tempid.Add(key, idx++);
-            var ret = new SortedDictionary<string, ushort>();
+            var ret = new SortedDictionary<string, ushort>(StringComparer.Ordinal);
             foreach (var (name, rva) in revmap) {
                 if (tempid.TryGetValue(rva, out var id)) {
                     ret.Add(name, id);

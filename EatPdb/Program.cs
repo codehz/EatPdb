@@ -46,6 +46,8 @@ namespace EatPdb {
                 return false;
             if (name.StartsWith("??@"))
                 return false;
+            if (name.StartsWith("?$TSS"))
+                return false;
             if (name.Contains("std@@Q"))
                 return false;
             if (name.Contains("std@@U"))
@@ -71,7 +73,7 @@ namespace EatPdb {
                 var symdb = new SymbolDatabase();
 
                 // Collect all symbols
-                foreach (var item in pdb.PublicSymbols.Where(item => item.IsCode && FilterName(item.Name)))
+                foreach (var item in pdb.PublicSymbols.Where(item => FilterName(item.Name)))
                     symdb.Add((uint) item.RelativeVirtualAddress, item.Name);
 
                 // Exclude imported symbols

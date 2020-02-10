@@ -35,14 +35,17 @@ namespace PdbReader {
             try {
                 using var reader = new PdbFileReader(options.InputFile);
                 if (options.Verbose)
-                    foreach (var item in from item in reader.PublicSymbols where item.IsCode && !item.Name.StartsWith("_") orderby item.RelativeVirtualAddress select item)
+                    foreach (var item in from item in reader.PublicSymbols where !item.Name.StartsWith("_") orderby item.RelativeVirtualAddress select item)
                         Console.WriteLine("{0}:{1:X8} {2}", item.Segment, item.RelativeVirtualAddress, options.Demangle ? item.GetUndecoratedName() : item.Name);
                 else {
-                    var items = from item in reader.PublicSymbols
-                                where item.IsCode && !item.Name.StartsWith("_")
+                    var syms = from item in reader.PublicSymbols
+                                where !item.Name.StartsWith("_")
                                 select item;
-                    Console.WriteLine("FullCount: {0}", items.Count());
-                    Console.WriteLine("DistinctCount: {0}", items.Distinct(new SymbolEqualityComparer()).Count());
+                    Console.WriteLine("Symbol FullCount: {0}", syms.Count());
+                    Console.WriteLine("Symbol DistinctCount: {0}", syms.Distinct(new SymbolEqualityComparer()).Count());
+
+                    var functions = reader.Functions;
+                    Console.WriteLine("Functions FullCount: {0}", functions.Count());
                 }
             } catch (Exception e) {
                 Console.WriteLine(e.ToString());
