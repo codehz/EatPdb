@@ -8,8 +8,25 @@ Only support x86_64 for now.
 
 ## Usage
 
+You need a config file to describe the filter
+
+```bash
+eatpdb exec config.yaml
 ```
-eatpdb -i your.exe -o your_mod.exe -p your.pdb --DllName your_mod.exe
+
+config.yaml:
+
+```yaml
+in: your.exe
+out: your_mod.exe
+filter: !blacklist
+  - prefix: "_"
+  - prefix: "?__"
+  - prefix: "??_"
+  - prefix: "??@"
+  - prefix: "?$TSS"
+  - regex: "std@@[QU]"
+  - name: "atexit"
 ```
 
 ## LICENSE
