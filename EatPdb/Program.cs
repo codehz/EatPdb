@@ -2,7 +2,9 @@
 using PESupport;
 using SharpPdb.Native;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -70,7 +72,8 @@ namespace EatPdb {
                 new Config.PrefixFilter("?$TSS"),
                 new Config.RegexFilter("std@@[QU]"),
             });
-            var cfg = new Config {
+            var cfg = new Config
+            {
                 InputFile = options.InputFile,
                 OutputFile = options.OutputFile,
                 PdbFile = options.PdbFile,
@@ -90,21 +93,63 @@ namespace EatPdb {
             using var exp = File.CreateText(config.DefFile);
             using var action = new PEAction(file);
             using var pdb = new PdbFileReader(config.PdbFile);
+            using var db = new SQLiteConnection("" + new SQLiteConnectionStringBuilder
+            {
+                DataSource = config.FilterOutDatabase,
+                SyncMode = SynchronizationModes.Off,
+                NoSharedFlags = true,
+                FailIfMissing = false
+            });
+            db.Open();
+            var filterout = new SortedDictionary<string, uint>(StringComparer.Ordinal);
             var symdb = new SymbolDatabase();
             Console.WriteLine("filtering ({0})", pdb.PublicSymbols.Length);
 
             // Collect all symbols
-            foreach (var item in pdb.PublicSymbols.Where(item => config.Filter?.Filter(item.IsCode, item.Name) ?? true))
-                symdb.Add((uint) item.RelativeVirtualAddress, item.Name);
+            Parallel.ForEach(pdb.PublicSymbols, (item) => {
+                if (config.Filter?.Filter(item.IsCode, item.Name) ?? true) {
+                    lock (symdb) { symdb.Add((uint) item.RelativeVirtualAddress, item.Name); }
+                } else {
+                    lock (filterout) { filterout.Add(item.Name, (uint) item.RelativeVirtualAddress); }
+                }
+            });
 
-            Console.WriteLine("symbols collected: {0}", symdb.Count());
+            Console.WriteLine("symbols collected: {0}, filtered: {1}", symdb.Count(), filterout.Count());
 
             // Exclude imported symbols
             foreach (var sym in action.GetImportSymbols())
                 if (symdb.RemoveName(sym) && verbose)
                     Console.WriteLine("Removed {0}", sym);
+                else if (filterout.Remove(sym) && verbose)
+                    Console.WriteLine("Removed {0} (filtered)", sym);
 
-            Console.WriteLine("symbols filtered: {0}", symdb.Count());
+            Console.WriteLine("symbols fixed: {0}, filtered fixed: {1}", symdb.Count(), filterout.Count());
+
+            // Write to filter out db
+            using (var transition = db.BeginTransaction()) {
+                using (var dropCommand = db.CreateCommand()) {
+                    dropCommand.CommandText = "DROP TABLE IF EXISTS symbols";
+                    dropCommand.Transaction = transition;
+                    dropCommand.ExecuteNonQuery();
+                }
+                using (var createCommand = db.CreateCommand()) {
+                    createCommand.CommandText = "CREATE TABLE symbols(symbol TEXT PRIMARY KEY, rva INTEGER) WITHOUT ROWID";
+                    createCommand.Transaction = transition;
+                    createCommand.ExecuteNonQuery();
+                }
+                using (var insertCommand = db.CreateCommand()) {
+                    insertCommand.CommandText = "INSERT INTO symbols VALUES ($symbol, $rva)";
+                    insertCommand.Transaction = transition;
+                    foreach (var item in filterout) {
+                        insertCommand.Parameters.AddWithValue("$symbol", item.Key);
+                        insertCommand.Parameters.AddWithValue("$rva", item.Value);
+                        insertCommand.ExecuteNonQuery();
+                        insertCommand.Parameters.Clear();
+                        insertCommand.Reset();
+                    }
+                }
+                transition.Commit();
+            }
 
             // Build cache
             var cache = symdb.ToArray();
@@ -120,8 +165,8 @@ namespace EatPdb {
 
             // Calculate append length
             uint length = 0;
-            var expdirlength = (uint)Marshal.SizeOf<ExportDir>();
-            var dllnamelength = (uint)(config.DllName.Length + 1);
+            var expdirlength = (uint) Marshal.SizeOf<ExportDir>();
+            var dllnamelength = (uint) (config.DllName.Length + 1);
             var NumberOfFunctions = (uint) cache.Count();
             var functionslength = NumberOfFunctions * 4;
             var NumberOfNames = (uint) cache.Select(item => item.Value.Count).Aggregate(0, (a, b) => a + b);
@@ -141,11 +186,11 @@ namespace EatPdb {
 
             // Start modify header
             var VirtualEnd = action.GetEnding();
-            var OriginalSize = (uint)file.Length;
+            var OriginalSize = (uint) file.Length;
             action.PatchNtHeader(GetAlign(length));
             action.PatchDir(0, VirtualEnd, length);
             {
-                var header = new SectionHeader {};
+                var header = new SectionHeader { };
                 header.SetName(".hacked");
                 header.Misc.VirtualSize = length;
                 header.VirtualAddress = VirtualEnd;
@@ -158,7 +203,7 @@ namespace EatPdb {
             // Write export table
             file.SetLength(OriginalSize + GetAlign(length));
             {
-                var expdir = new ExportDir {};
+                var expdir = new ExportDir { };
                 expdir.Name = VirtualEnd + expdirlength;
                 expdir.Base = 1;
                 expdir.NumberOfFunctions = NumberOfFunctions;
@@ -175,7 +220,7 @@ namespace EatPdb {
                 action.Writer.WriteStruct(new Ordinal { Value = idx });
             {
                 var strscache = new List<uint>();
-                var baseoff = (uint)file.Position;
+                var baseoff = (uint) file.Position;
                 var baserva = VirtualEnd + expdirlength + dllnamelength + functionslength + ordinalslength;
                 foreach (var (name, _) in sorted) {
                     strscache.Add((uint) file.Position - baseoff + baserva);

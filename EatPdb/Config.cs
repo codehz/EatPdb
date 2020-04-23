@@ -65,22 +65,22 @@ namespace EatPdb {
                         if (parser.TryConsume<Scalar>(out var key)) {
                             var value = parser.Consume<Scalar>();
                             switch (key.Value) {
-                            case "is_code":
-                                data.Add(new IsCodeFilter(bool.Parse(value.Value)));
-                                break;
-                            case "full":
-                            case "name":
-                                data.Add(new FullNameFilter(value.Value));
-                                break;
-                            case "prefix":
-                                data.Add(new PrefixFilter(value.Value));
-                                break;
-                            case "regex":
-                            case "pattern":
-                                data.Add(new RegexFilter(value.Value));
-                                break;
-                            default:
-                                throw new NotImplementedException("Unknown key: " + value.Value);
+                                case "is_code":
+                                    data.Add(new IsCodeFilter(bool.Parse(value.Value)));
+                                    break;
+                                case "full":
+                                case "name":
+                                    data.Add(new FullNameFilter(value.Value));
+                                    break;
+                                case "prefix":
+                                    data.Add(new PrefixFilter(value.Value));
+                                    break;
+                                case "regex":
+                                case "pattern":
+                                    data.Add(new RegexFilter(value.Value));
+                                    break;
+                                default:
+                                    throw new NotImplementedException("Unknown key: " + value.Value);
                             }
                         }
                         parser.Consume<MappingEnd>();
@@ -109,6 +109,8 @@ namespace EatPdb {
         public string DllName { get; set; } = "";
         [YamlMember(Alias = "filter")]
         public IFilter? Filter { get; set; }
+        [YamlMember(Alias = "filterdb")]
+        public string FilterOutDatabase { get; set; } = "";
 
         public void ApplyDefault() {
             if (PdbFile == "")

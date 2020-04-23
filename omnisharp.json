@@ -1,0 +1,18 @@
+{
+  "FormattingOptions": {
+    "IndentationSize": 4,
+    "NewLinesForBracesInLambdaExpressionBody": false,
+    "NewLinesForBracesInAnonymousMethods": false,
+    "NewLinesForBracesInAnonymousTypes": false,
+    "NewLinesForBracesInControlBlocks": false,
+    "NewLinesForBracesInTypes": false,
+    "NewLinesForBracesInMethods": false,
+    "NewLinesForBracesInProperties": false,
+    "NewLinesForBracesInAccessors": false,
+    "NewLineForElse": false,
+    "NewLineForCatch": false,
+    "NewLineForFinally": false,
+    "SpaceAfterCast": true,
+    "SpaceBetweenEmptySquareBrackets": false
+  }
+}

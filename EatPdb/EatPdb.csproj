@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>eatpdb</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Version>0.0.4</Version>
@@ -20,6 +21,7 @@
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="ObjectDumper.NET" Version="2.5.20033.1" />
     <PackageReference Include="SharpPdb" Version="1.0.4" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.1" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
   </ItemGroup>
 
