@@ -19,6 +19,7 @@ config.yaml:
 ```yaml
 in: your.exe
 out: your_mod.exe
+filterdb: extra.db
 filter: !blacklist
   - prefix: "_"
   - prefix: "?__"
